@@ -118,6 +118,22 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
+def validate_runtime_image_environment() -> None:
+    """Fail closed when deployment supplies an expanded image reference."""
+    runtime_image = os.environ.get("CODESTRA_TEMPO_IMAGE")
+    runtime_digest = os.environ.get("CODESTRA_IMAGE_DIGEST")
+    if runtime_image is None and runtime_digest is None:
+        return
+    immutable_image = re.compile(
+        r"^[a-z0-9./_-]+(?::[a-zA-Z0-9._-]+)?@sha256:([0-9a-f]{64})$"
+    )
+    match = immutable_image.fullmatch(runtime_image or "")
+    if not match:
+        fail("expanded CODESTRA_TEMPO_IMAGE must be an immutable @sha256:<64 hex> reference")
+    if runtime_digest != f"sha256:{match.group(1)}":
+        fail("CODESTRA_IMAGE_DIGEST must equal the digest in CODESTRA_TEMPO_IMAGE")
+
+
 def require_file(path: pathlib.Path) -> str:
     if not path.is_file():
         fail(f"missing required file: {path.relative_to(ROOT)}")
@@ -387,6 +403,7 @@ def validate_packaging() -> None:
     image = str(service.get("image", ""))
     if "${CODESTRA_TEMPO_IMAGE:" not in image or "sha256" not in image:
         fail("Tempo runtime must require an immutable final image")
+    validate_runtime_image_environment()
     if "build" in service:
         fail("deployment candidate may not build on the target host")
     limits = service.get("deploy", {}).get("resources", {}).get("limits", {})

@@ -73,6 +73,7 @@ jobs:
           TEMPO_S3_CREDENTIALS_FILE: /tmp/tempo-s3-credentials
           TEMPO_S3_CA_FILE: /tmp/tempo-s3-ca.pem
         run: |
+          python -c "import scripts.validate_codestra_enterprise_profile as v; v.validate_runtime_image_environment()"
           docker compose -f codestra/deploy/compose.candidate.yaml config > /tmp/codestra-tempo-compose.yaml
           test -s /tmp/codestra-tempo-compose.yaml
           grep -Eq 'host_ip:[[:space:]]*127\.0\.0\.1' /tmp/codestra-tempo-compose.yaml

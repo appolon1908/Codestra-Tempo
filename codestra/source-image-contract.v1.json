@@ -7,6 +7,13 @@
     "officialTreeSha": "1ae8165a03e2eb515b9f96c9f0a9a139654aec9a",
     "importedTreeSha": "e762af476c5f14874326c065b08f22786b897910",
     "sanitizedPaths": [
+      "opentelemetry-proto",
+      "example/nomad/tempo-distributed/README.md",
+      "example/nomad/tempo-monolith/README.md",
+      "example/nomad/tempo-monolith/tempo.hcl",
+      "vendor/github.com/AzureAD/microsoft-authentication-library-for-go/LICENSE",
+      "vendor/github.com/go-logfmt/logfmt/README.md",
+      "vendor/github.com/klauspost/cpuid/v2/CONTRIBUTING.txt",
       "vendor/go.yaml.in/yaml/v4/CONTRIBUTING.md",
       "vendor/go.yaml.in/yaml/v4/README.md"
     ]

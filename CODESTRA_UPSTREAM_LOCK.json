@@ -9,8 +9,17 @@
   "sanitization": {
     "mode": "remove-explicit-upstream-documentation-fixtures",
     "removed_paths": [
+      "opentelemetry-proto",
       "vendor/go.yaml.in/yaml/v4/CONTRIBUTING.md",
       "vendor/go.yaml.in/yaml/v4/README.md"
+    ],
+    "normalized_line_endings": [
+      "example/nomad/tempo-distributed/README.md",
+      "example/nomad/tempo-monolith/README.md",
+      "example/nomad/tempo-monolith/tempo.hcl",
+      "vendor/github.com/AzureAD/microsoft-authentication-library-for-go/LICENSE",
+      "vendor/github.com/go-logfmt/logfmt/README.md",
+      "vendor/github.com/klauspost/cpuid/v2/CONTRIBUTING.txt"
     ],
     "reason": "Official vendored documentation fixtures are excluded from the Codestra parent repository; no runtime or product source is modified."
   },

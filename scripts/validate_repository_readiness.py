@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 import yaml
@@ -13,6 +15,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 IMAGE = re.compile(r"^[a-z0-9./_-]+@sha256:[0-9a-f]{64}$")
 AUTHORITY = "appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-image.yml@9a6aebb849bbc068105c10d9d1dfd39ebf6f78bd"
+OFFICIAL_UPSTREAM = "https://github.com/grafana/tempo.git"
+GIT_OBJECT = re.compile(r"^[0-9a-f]{40}$")
 REQUIRED = (
     "README.md", "REPOSITORY_PROFILE.md", "SECURITY.md", ".github/CODEOWNERS",
     "docs/BACKUP_RESTORE_ROLLBACK.md", "docs/UPGRADE.md", ".dockerignore", ".gitleaks.toml",
@@ -32,6 +36,65 @@ def load(relative: str) -> dict:
     return value
 
 
+def verify_official_source(upstream: dict) -> None:
+    """Verify official and sanitized trees from the fixed upstream."""
+    commit = str(upstream.get("upstream_commit", ""))
+    if not GIT_OBJECT.fullmatch(commit):
+        fail("upstream_commit must be an exact 40-character Git object ID")
+    if upstream.get("upstream_clone_url") != OFFICIAL_UPSTREAM:
+        fail("upstream clone URL is not the fixed official Grafana Tempo repository")
+
+    subprocess.run(
+        ["git", "fetch", "--quiet", "--no-tags", "--depth=1", OFFICIAL_UPSTREAM, commit],
+        cwd=ROOT,
+        check=True,
+    )
+    official_tree = subprocess.run(
+        ["git", "rev-parse", f"{commit}^{{tree}}"], cwd=ROOT, check=True,
+        capture_output=True, text=True,
+    ).stdout.strip()
+    if official_tree != upstream.get("official_tree_sha"):
+        fail("official upstream tree differs from official_tree_sha")
+
+    sanitization = upstream.get("sanitization", {})
+    removed_paths = sanitization.get("removed_paths", [])
+    normalized_paths = sanitization.get("normalized_line_endings", [])
+    if not isinstance(removed_paths, list) or not removed_paths:
+        fail("sanitization.removed_paths must be a non-empty list")
+    if not isinstance(normalized_paths, list) or not normalized_paths:
+        fail("sanitization.normalized_line_endings must be a non-empty list")
+    with tempfile.NamedTemporaryFile(prefix="codestra-tempo-index-") as index:
+        env = os.environ.copy()
+        env["GIT_INDEX_FILE"] = index.name
+        subprocess.run(["git", "read-tree", official_tree], cwd=ROOT, env=env, check=True)
+        subprocess.run(
+            ["git", "update-index", "--force-remove", "--", *removed_paths],
+            cwd=ROOT, env=env, check=True,
+        )
+        for path in normalized_paths:
+            official_content = subprocess.run(
+                ["git", "show", f"{commit}:{path}"], cwd=ROOT, check=True,
+                capture_output=True,
+            ).stdout
+            normalized_content = official_content.replace(b"\r\n", b"\n")
+            if normalized_content == official_content:
+                fail(f"declared line-ending normalization has no effect: {path}")
+            blob = subprocess.run(
+                ["git", "hash-object", "-w", "--stdin"], cwd=ROOT, check=True,
+                input=normalized_content, capture_output=True,
+            ).stdout.decode().strip()
+            subprocess.run(
+                ["git", "update-index", "--add", "--cacheinfo", f"100644,{blob},{path}"],
+                cwd=ROOT, env=env, check=True,
+            )
+        sanitized_tree = subprocess.run(
+            ["git", "write-tree"], cwd=ROOT, env=env, check=True,
+            capture_output=True, text=True,
+        ).stdout.strip()
+    if sanitized_tree != upstream.get("imported_tree_sha"):
+        fail("official upstream tree with declared sanitization differs from imported_tree_sha")
+
+
 def main() -> None:
     missing = [path for path in REQUIRED if not (ROOT / path).is_file()]
     if missing: fail(f"missing readiness files: {missing}")
@@ -40,6 +103,7 @@ def main() -> None:
     manifest = load("codestra/release/image-build.v1.json")
     lock = load("codestra/release/runtime-base.lock.json")
     upstream = load("CODESTRA_UPSTREAM_LOCK.json")
+    verify_official_source(upstream)
     contract = load("codestra/source-image-contract.v1.json")
     if manifest.get("imageId") != "tempo" or manifest.get("context") != "." or manifest.get("productionActivation") is not False:
         fail("image manifest identity/context/activation mismatch")

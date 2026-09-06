@@ -28,12 +28,13 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
       ./healthcheck.go \
     && /out/tempo-healthcheck 2>&1 | grep -q 'readiness request failed' \
     && install -d -m 0555 /out/rootfs/etc/tempo /out/rootfs/usr/share/codestra \
-    && install -d -m 0755 /out/rootfs/var/lib/tempo \
+    && install -d -m 0755 /out/rootfs/var/lib/tempo /out/rootfs/var/tempo/live-store \
     && install -m 0444 ./config/tempo.yaml /out/rootfs/etc/tempo/tempo.yaml \
     && install -m 0444 ./config/overrides.yaml /out/rootfs/etc/tempo/overrides.yaml \
     && install -m 0444 ./metadata/CODESTRA_UPSTREAM_LOCK.json /out/rootfs/usr/share/codestra/CODESTRA_UPSTREAM_LOCK.json \
     && install -m 0444 ./metadata/source-image-contract.v1.json /out/rootfs/usr/share/codestra/source-image-contract.v1.json \
-    && touch /out/rootfs/var/lib/tempo/.codestra-volume-owner
+    && touch /out/rootfs/var/lib/tempo/.codestra-volume-owner \
+             /out/rootfs/var/tempo/live-store/.codestra-volume-owner
 
 FROM ${TEMPO_BASE_IMAGE}
 LABEL org.opencontainers.image.title="Codestra Corporate Tempo"
