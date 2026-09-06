@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactModel": "repository-built-signed-image",
+  "imageId": "tempo",
+  "sourceAuthorityCommit": "049347c455383b93cd8557760f18c1f269cccc2b",
+  "sourceOfficialTreeSha": "1ae8165a03e2eb515b9f96c9f0a9a139654aec9a",
+  "sourceImportedTreeSha": "e762af476c5f14874326c065b08f22786b897910",
+  "buildFrontendImage": "docker.io/docker/dockerfile@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e",
+  "builderVersion": "go1.26.7",
+  "builderImage": "docker.io/library/golang@sha256:e8c859f5632dcfde7b32d2012b4351728f6437930887c2f6a91ea242459e5514",
+  "runtimeBaseImage": "gcr.io/distroless/static-debian12@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab",
+  "runtimeBaseExecutableUsed": false,
+  "productionActivation": false
+}

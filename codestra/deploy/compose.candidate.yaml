@@ -1,0 +1,101 @@
+name: codestra-tempo
+
+services:
+  tempo:
+    image: ${CODESTRA_TEMPO_IMAGE:?set the immutable Codestra Tempo image reference including sha256 digest}
+    command:
+      - -config.file=/etc/tempo/tempo.yaml
+      - -config.expand-env=true
+      - -target=all
+    restart: unless-stopped
+    init: true
+    user: "10001:10001"
+    read_only: true
+    stop_grace_period: 90s
+    environment:
+      CODESTRA_ENVIRONMENT: ${CODESTRA_ENVIRONMENT:?required}
+      CODESTRA_REGION: ${CODESTRA_REGION:?required}
+      CODESTRA_DEPLOYMENT_ID: ${CODESTRA_DEPLOYMENT_ID:?required}
+      CODESTRA_SOURCE_SHA: ${CODESTRA_SOURCE_SHA:?required protected source SHA}
+      CODESTRA_IMAGE_DIGEST: ${CODESTRA_IMAGE_DIGEST:?required sha256 image digest}
+      TEMPO_S3_ENDPOINT: ${TEMPO_S3_ENDPOINT:?required}
+      TEMPO_S3_BUCKET: ${TEMPO_S3_BUCKET:?required}
+      TEMPO_S3_REGION: ${TEMPO_S3_REGION:-us-east-1}
+      TEMPO_S3_INSECURE: ${TEMPO_S3_INSECURE:-false}
+      TEMPO_MEMCACHED_ADDRESSES: ${TEMPO_MEMCACHED_ADDRESSES:-dns+memcached:11211}
+      TEMPO_PROMETHEUS_REMOTE_WRITE_URL: ${TEMPO_PROMETHEUS_REMOTE_WRITE_URL:-http://prometheus:9090/api/v1/write}
+      TEMPO_OVERRIDES_FILE: /etc/tempo/overrides.yaml
+      AWS_SHARED_CREDENTIALS_FILE: /run/secrets/tempo_s3_credentials
+      AWS_PROFILE: tempo
+      SSL_CERT_FILE: /run/secrets/tempo_s3_ca
+      TEMPO_HEALTHCHECK_URL: http://127.0.0.1:3200/ready
+    secrets:
+      - tempo_s3_credentials
+      - tempo_s3_ca
+    ports:
+      - "127.0.0.1:${TEMPO_QUERY_HOST_PORT:-3200}:3200"
+    expose:
+      - "3101"
+      - "3200"
+      - "4317"
+      - "4318"
+      - "9095"
+    networks:
+      - codestra-observability
+    volumes:
+      - tempo-data:/var/lib/tempo
+      - tempo-live-store:/var/tempo/live-store
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ["CMD", "/tempo-healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    logging:
+      driver: json-file
+      options:
+        max-size: 25m
+        max-file: "3"
+    labels:
+      codestra.business: platform
+      codestra.application: observability
+      codestra.service: tempo
+      codestra.environment: ${CODESTRA_ENVIRONMENT:?required}
+      codestra.region: ${CODESTRA_REGION:?required}
+      codestra.deployment: ${CODESTRA_DEPLOYMENT_ID:?required}
+      codestra.telemetry.collect: "true"
+      codestra.production.ha-approved: "false"
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 8G
+          pids: 1024
+        reservations:
+          cpus: "1.0"
+          memory: 2G
+
+networks:
+  codestra-observability:
+    external: true
+    name: ${CODESTRA_OBSERVABILITY_NETWORK:-codestra-observability}
+
+volumes:
+  tempo-data:
+  tempo-live-store:
+
+secrets:
+  tempo_s3_credentials:
+    file: ${TEMPO_S3_CREDENTIALS_FILE:?mount an OpenBao-rendered AWS shared-credentials file}
+  tempo_s3_ca:
+    file: ${TEMPO_S3_CA_FILE:?mount the approved private object-store CA bundle}

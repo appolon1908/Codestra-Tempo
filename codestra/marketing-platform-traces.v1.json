@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "status": "TRACE_CONTRACT_PREPARED_NOT_DEPLOYED",
+  "domain": "codestra-marketing-platform",
+  "services": ["kong","keycloak","middleware","marketing","ai","communication","social-control","social-runtime","n8n","odoo"],
+  "criticalPaths": ["lead-intake","marketing-attribution","odoo-upsert","n8n-orchestration","communication-dry-run","conversion-feedback"],
+  "sampling": {"errors": "retain","highLatency": "retain","criticalPaths": "retain","routineSuccess": "bounded"},
+  "forbiddenSpanAttributes": ["authorization","cookie","set_cookie","access_token","refresh_token","client_secret","api_key","session_key","private_key","password","email","phone","name","address","customer_id","lead_id","campaign_id","message_body","prompt_body","response_body","raw_url","query_string","referrer","utm_source","utm_medium","utm_campaign","utm_term","utm_content","sql_statement","db_statement","idempotency_key"],
+  "canonicalRedactionPoliciesInherited": true,
+  "requirements": {"serviceIdentity": true,"deploymentIdentity": true,"businessIsolation": true,"redactionRequired": true},
+  "activation": {"ingestionEnabled": false,"productionEnabled": false}
+}

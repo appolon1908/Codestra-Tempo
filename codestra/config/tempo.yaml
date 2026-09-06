@@ -1,0 +1,193 @@
+# Codestra Tempo corporate tracing configuration.
+# Runtime variables are expanded with -config.expand-env=true.
+# The current candidate is a source-validated single-binary topology for test/staging;
+# production remains blocked until distributed HA evidence is approved.
+
+target: all
+stream_over_http_enabled: true
+multitenancy_enabled: true
+
+memory:
+  automemlimit_enabled: true
+  automemlimit_ratio: 0.8
+
+server:
+  http_listen_address: 0.0.0.0
+  http_listen_port: 3200
+  grpc_listen_address: 0.0.0.0
+  grpc_listen_port: 9095
+  log_level: info
+  log_format: json
+  log_request_headers: false
+  trace_request_headers: false
+  graceful_shutdown_timeout: 60s
+  http_server_read_timeout: 30s
+  http_server_write_timeout: 60s
+  http_server_idle_timeout: 120s
+  grpc_server_max_recv_msg_size: 33554432
+  grpc_server_max_send_msg_size: 33554432
+  grpc_server_max_concurrent_streams: 100
+
+internal_server:
+  enable: true
+  http_listen_address: 0.0.0.0
+  http_listen_port: 3101
+  log_level: info
+  log_format: json
+  log_request_headers: false
+  trace_request_headers: false
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+          max_recv_msg_size_mib: 32
+        http:
+          endpoint: 0.0.0.0:4318
+  log_received_spans:
+    enabled: false
+  log_discarded_spans:
+    enabled: false
+
+query_frontend:
+  max_retries: 3
+  search:
+    duration_slo: 5s
+    throughput_bytes_slo: 20000000
+    metadata_slo:
+      duration_slo: 5s
+      throughput_bytes_slo: 20000000
+  trace_by_id:
+    duration_slo: 5s
+  metrics:
+    duration_slo: 5s
+    throughput_bytes_slo: 20000000
+  mcp_server:
+    enabled: false
+
+metrics_generator:
+  registry:
+    external_labels:
+      source: tempo
+      cluster: codestra-primary
+      environment: ${CODESTRA_ENVIRONMENT}
+      region: ${CODESTRA_REGION}
+      deployment: ${CODESTRA_DEPLOYMENT_ID}
+  storage:
+    path: /var/lib/tempo/generator
+    remote_write:
+      - url: ${TEMPO_PROMETHEUS_REMOTE_WRITE_URL:-http://prometheus:9090/api/v1/write}
+        send_exemplars: true
+        remote_timeout: 30s
+  processor:
+    service_graphs:
+      wait: 10s
+      max_items: 10000
+      workers: 10
+      dimensions:
+        - codestra.business
+        - deployment.environment.name
+        - cloud.region
+        - deployment.id
+      peer_attributes:
+        - peer.service
+      enable_client_server_prefix: true
+      enable_messaging_system_latency_histogram: true
+    span_metrics:
+      dimensions:
+        - codestra.business
+        - deployment.environment.name
+        - cloud.region
+        - deployment.id
+        - service.namespace
+        - http.request.method
+        - http.response.status_code
+        - rpc.system
+        - messaging.system
+        - db.system.name
+      enable_target_info: false
+      enable_instance_label: false
+
+backend_scheduler:
+  provider:
+    compaction:
+      compaction:
+        block_retention: 720h
+
+backend_worker:
+  compaction:
+    block_retention: 720h
+
+storage:
+  trace:
+    backend: s3
+    blocklist_poll: 5m
+    blocklist_poll_concurrency: 25
+    blocklist_poll_tenant_concurrency: 4
+    empty_tenant_deletion_enabled: true
+    empty_tenant_deletion_age: 24h
+    s3:
+      endpoint: ${TEMPO_S3_ENDPOINT}
+      bucket: ${TEMPO_S3_BUCKET}
+      region: ${TEMPO_S3_REGION:-us-east-1}
+      insecure: ${TEMPO_S3_INSECURE:-false}
+    wal:
+      path: /var/lib/tempo/wal
+    block:
+      version: vParquet4
+      bloom_filter_false_positive: 0.01
+
+cache:
+  caches:
+    - roles:
+        - bloom
+        - trace-id-index
+        - parquet-footer
+        - parquet-column-idx
+        - parquet-offset-idx
+      memcached:
+        addresses: ${TEMPO_MEMCACHED_ADDRESSES:-dns+memcached:11211}
+        timeout: 500ms
+        max_idle_conns: 100
+        max_item_size: 1048576
+
+usage_report:
+  reporting_enabled: false
+
+overrides:
+  per_tenant_override_config: ${TEMPO_OVERRIDES_FILE:-/etc/tempo/overrides.yaml}
+  per_tenant_override_period: 10s
+  defaults:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 15000000
+      burst_size_bytes: 30000000
+      max_traces_per_user: 50000
+      max_global_traces_per_user: 100000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors:
+        - service-graphs
+        - span-metrics
+      max_active_series: 250000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2

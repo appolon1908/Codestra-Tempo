@@ -1,0 +1,438 @@
+# Tempo tenant IDs are Codestra business domains, never customers, users or accounts.
+# Each override is intentionally complete because Tempo does not inherit omitted fields
+# from the defaults block when a tenant-specific override exists.
+
+overrides:
+  platform:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 20000000
+      burst_size_bytes: 40000000
+      max_traces_per_user: 100000
+      max_global_traces_per_user: 200000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 500000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 10000
+        workers: 4
+
+  codestra:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 12000000
+      burst_size_bytes: 24000000
+      max_traces_per_user: 50000
+      max_global_traces_per_user: 100000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 250000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2
+
+  moneybee:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 8000000
+      burst_size_bytes: 16000000
+      max_traces_per_user: 40000
+      max_global_traces_per_user: 80000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 1440h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 250000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2
+
+  beyvra:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 8000000
+      burst_size_bytes: 16000000
+      max_traces_per_user: 40000
+      max_global_traces_per_user: 80000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 1440h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 250000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2
+
+  breero:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 8000000
+      burst_size_bytes: 16000000
+      max_traces_per_user: 40000
+      max_global_traces_per_user: 80000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 200000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2
+
+  larim-a:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 8000000
+      burst_size_bytes: 16000000
+      max_traces_per_user: 40000
+      max_global_traces_per_user: 80000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 200000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2
+
+  transportation:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 8000000
+      burst_size_bytes: 16000000
+      max_traces_per_user: 40000
+      max_global_traces_per_user: 80000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 200000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2
+
+  booked4seasons:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 6000000
+      burst_size_bytes: 12000000
+      max_traces_per_user: 30000
+      max_global_traces_per_user: 60000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 150000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 4000
+        workers: 2
+
+  social:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 8000000
+      burst_size_bytes: 16000000
+      max_traces_per_user: 40000
+      max_global_traces_per_user: 80000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 200000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2
+
+  klyrow:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 12000000
+      burst_size_bytes: 24000000
+      max_traces_per_user: 60000
+      max_global_traces_per_user: 120000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 300000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 7500
+        workers: 3
+
+  telnexa:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 12000000
+      burst_size_bytes: 24000000
+      max_traces_per_user: 60000
+      max_global_traces_per_user: 120000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 300000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 7500
+        workers: 3
+
+  kyqra:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 20000000
+      burst_size_bytes: 40000000
+      max_traces_per_user: 100000
+      max_global_traces_per_user: 200000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 336h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 300000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 10000
+        workers: 4
+
+  restaurant:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 6000000
+      burst_size_bytes: 12000000
+      max_traces_per_user: 30000
+      max_global_traces_per_user: 60000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 720h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 150000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 4000
+        workers: 2
+
+  provisioning:
+    ingestion:
+      rate_strategy: global
+      rate_limit_bytes: 8000000
+      burst_size_bytes: 16000000
+      max_traces_per_user: 40000
+      max_global_traces_per_user: 80000
+      max_attribute_bytes: 4096
+      artificial_delay: 0s
+    read:
+      max_bytes_per_tag_values_query: 5000000
+      max_blocks_per_tag_values_query: 250
+      max_search_duration: 168h
+      max_metrics_duration: 24h
+      unsafe_query_hints: false
+      left_pad_trace_ids: true
+    compaction:
+      block_retention: 1440h
+      compaction_window: 1h
+    global:
+      max_bytes_per_trace: 5000000
+    metrics_generator:
+      ring_size: 1
+      processors: [service-graphs, span-metrics]
+      max_active_series: 200000
+      collection_interval: 15s
+      disable_collection: false
+      forwarder:
+        queue_size: 5000
+        workers: 2

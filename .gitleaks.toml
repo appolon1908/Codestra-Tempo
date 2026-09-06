@@ -1,0 +1,10 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Official upstream documentation and test fixtures excluded from the production image build context"
+paths = [
+  '''^upstream/(?:docs?|examples?|integration|integration-tests?)/''',
+  '''^upstream/.*(?:_test\.go$|\.golden$|/testdata/)''',
+  '''^upstream/vendor/cloud\.google\.com/go/storage/storage\.replay$''',
+]

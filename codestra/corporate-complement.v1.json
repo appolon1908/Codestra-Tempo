@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "component": "tempo",
+  "codestraRole": "distributed tracing authority",
+  "corporatePurpose": "Trace customer-safe request paths across Caddy, Kong, Middleware, providers, workers and business backends.",
+  "businessPortfolio": ["codestra", "moneybee", "beyvra", "breero", "larim-a", "transportation", "booked4seasons", "social", "klyrow", "telnexa", "kyqra", "restaurant", "provisioning"],
+  "standardDimensions": ["codestra_business", "application", "service", "environment", "server", "region", "deployment"],
+  "forbiddenLabels": ["tenant_id", "customer_id", "user_id", "email", "phone", "request_id", "trace_id", "message_id", "financial_transaction_id"],
+  "corporateFeatures": ["service_graphs", "trace_to_logs", "trace_to_metrics", "dependency_latency", "tail_sampling_policy", "async_correlation", "provider_path_tracing", "deployment_trace_correlation"],
+  "dashboardContribution": ["slow_request_investigation", "dependency_maps", "provider_latency_context", "business_request_paths"],
+  "beyvraBoundary": "Trace metadata may show safe operation class and dependency timing, never order payloads, broker credentials or trade-signing data.",
+  "activationStatus": "CONFIG_PREPARED_NOT_DEPLOYED"
+}

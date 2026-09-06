@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "imageId": "tempo",
+  "dockerfile": "codestra/deploy/Dockerfile",
+  "context": ".",
+  "buildArgs": {
+    "GO_BUILDER_IMAGE": "docker.io/library/golang@sha256:e8c859f5632dcfde7b32d2012b4351728f6437930887c2f6a91ea242459e5514",
+    "TEMPO_BASE_IMAGE": "gcr.io/distroless/static-debian12@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab",
+    "TEMPO_SOURCE_REVISION": "049347c455383b93cd8557760f18c1f269cccc2b"
+  },
+  "license": "Apache-2.0",
+  "description": "Source-built private Tempo tracing service with bounded Codestra tenancy and derived metrics.",
+  "productionActivation": false
+}

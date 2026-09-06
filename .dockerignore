@@ -1,0 +1,7 @@
+.git
+dist
+upstream/docs
+upstream/example
+upstream/integration
+upstream/integration-tests
+upstream/**/*_test.go

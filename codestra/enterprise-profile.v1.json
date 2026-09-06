@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "1.1",
+  "component": "tempo",
+  "role": "distributed-trace-storage-query-and-derived-metrics-authority",
+  "canonicalHostname": "temp.codestra.media",
+  "exposure": "internal_private",
+  "status": "CONFIG_PREPARED_NOT_DEPLOYED",
+  "businessScope": [
+    "codestra",
+    "moneybee",
+    "beyvra",
+    "breero",
+    "larim-a",
+    "transportation",
+    "booked4seasons",
+    "social",
+    "klyrow",
+    "telnexa",
+    "kyqra",
+    "restaurant",
+    "provisioning"
+  ],
+  "tenancy": {
+    "enabled": true,
+    "header": "X-Scope-OrgID",
+    "unit": "codestra_business",
+    "customerIdentifiersAsTenantIds": false,
+    "callerSuppliedTenantHeaderTrusted": false,
+    "crossBusinessAccessDefault": "deny"
+  },
+  "topology": {
+    "currentCandidate": "single_binary_test_and_staging",
+    "productionDistributedHARequired": true,
+    "productionApproved": false,
+    "reason": "The locked Tempo source supports a source-validated single-binary candidate without introducing an unproven Kafka control plane. Production requires a separately evidenced distributed topology, object-store recovery, query continuity and ingestion failover."
+  },
+  "storage": {
+    "backend": "s3_compatible",
+    "blockVersion": "vParquet4",
+    "wal": true,
+    "formatTuningAuthority": "locked_tempo_source",
+    "deprecatedStorageKnobsAllowed": false,
+    "credentialsFromRuntimeSecretFile": true,
+    "tlsVerificationRequired": true
+  },
+  "requiredResourceAttributes": [
+    "service.name",
+    "service.namespace",
+    "service.version",
+    "deployment.environment.name",
+    "deployment.id",
+    "cloud.region",
+    "codestra.business"
+  ],
+  "protectedCorrelationFields": [
+    "trace_id",
+    "span_id",
+    "request_id",
+    "correlation_id"
+  ],
+  "forbiddenMetricOrTenantDimensions": [
+    "tenant_id",
+    "customer_id",
+    "account_id",
+    "user_id",
+    "email",
+    "phone",
+    "message_id",
+    "order_id",
+    "request_id",
+    "correlation_id",
+    "trace_id",
+    "span_id",
+    "raw_url",
+    "query_string",
+    "db.statement",
+    "exception.message",
+    "container.id",
+    "process.pid"
+  ],
+  "redaction": {
+    "requiredBeforeIngestion": true,
+    "authorities": [
+      "opentelemetry",
+      "alloy"
+    ],
+    "forbiddenContent": [
+      "authorization_headers",
+      "cookies",
+      "passwords",
+      "api_keys",
+      "private_keys",
+      "session_tokens",
+      "database_dsns",
+      "raw_request_or_response_bodies",
+      "broker_or_exchange_signing_material",
+      "customer_financial_payloads"
+    ]
+  },
+  "privacy": {
+    "captureSecrets": false,
+    "captureAuthorizationHeaders": false,
+    "captureCookies": false,
+    "captureRawPii": false,
+    "captureRequestBodies": false,
+    "captureResponseBodies": false,
+    "captureDatabaseStatements": false,
+    "captureBrokerSigningMaterial": false
+  },
+  "sampling": {
+    "authority": "opentelemetry",
+    "tempoPerformsTailSampling": false,
+    "policyRequirements": [
+      "preserve_errors",
+      "preserve_high_latency",
+      "preserve_security_and_reconciliation_failures",
+      "preserve_low_rate_business_critical_paths",
+      "bound_normal_success_volume"
+    ]
+  },
+  "retention": {
+    "defaultHours": 720,
+    "financialAndProvisioningHours": 1440,
+    "highVolumeKyqraHours": 336
+  },
+  "features": {
+    "otlpGrpc": true,
+    "otlpHttp": true,
+    "traceSearch": true,
+    "traceById": true,
+    "businessTenantIsolation": true,
+    "perBusinessRetentionAndLimits": true,
+    "serviceGraphs": true,
+    "spanMetrics": true,
+    "prometheusExemplars": true,
+    "grafanaMetricsLogsCorrelation": true,
+    "s3BackedParquetStorage": true,
+    "durableWal": true,
+    "queryBudgets": true,
+    "attributeSizeBudgets": true,
+    "metricCardinalityBudgets": true,
+    "privateEndpoints": true,
+    "sourceNativeConfigValidation": true,
+    "selfMonitoring": true
+  },
+  "integrations": {
+    "ingestion": [
+      "opentelemetry",
+      "alloy"
+    ],
+    "query": [
+      "grafana"
+    ],
+    "derivedMetrics": [
+      "prometheus"
+    ],
+    "logCorrelation": [
+      "loki"
+    ]
+  },
+  "financialTradingBoundary": {
+    "business": "beyvra",
+    "rule": "Traces may show safe aggregate latency, provider/reconciliation outcomes, redacted operation names and capability state. Tempo never stores broker credentials, signing material, raw order payloads, authoritative balances, positions or executions, and never receives trade-mutation authority."
+  }
+}
