@@ -44,6 +44,7 @@ services:
       - codestra-observability
     volumes:
       - tempo-data:/var/lib/tempo
+      - tempo-live-store:/var/tempo/live-store
     tmpfs:
       - /tmp:size=128m,mode=1777
     security_opt:
@@ -91,6 +92,7 @@ networks:
 
 volumes:
   tempo-data:
+  tempo-live-store:
 
 secrets:
   tempo_s3_credentials:
