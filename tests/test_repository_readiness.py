@@ -3,12 +3,14 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 
 class ReadinessTests(unittest.TestCase):
@@ -21,6 +23,14 @@ class ReadinessTests(unittest.TestCase):
         self.assertEqual(upstream["upstream_commit"], lock["sourceAuthorityCommit"])
         self.assertEqual(upstream["imported_tree_sha"], lock["sourceImportedTreeSha"])
         self.assertFalse(lock["runtimeBaseExecutableUsed"])
+
+    def test_sanitization_policy_is_independent_from_lock_metadata(self) -> None:
+        from scripts import validate_repository_readiness as readiness
+
+        upstream = json.loads((ROOT / "CODESTRA_UPSTREAM_LOCK.json").read_text())
+        upstream["sanitization"]["removed_paths"].append("cmd/tempo/main.go")
+        with self.assertRaisesRegex(SystemExit, "independently approved policy"):
+            readiness.verify_official_source(upstream)
 
     def test_imported_tree_matches_locked_git_tree(self) -> None:
         upstream = json.loads((ROOT / "CODESTRA_UPSTREAM_LOCK.json").read_text())

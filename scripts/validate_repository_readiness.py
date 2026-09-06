@@ -17,6 +17,19 @@ IMAGE = re.compile(r"^[a-z0-9./_-]+@sha256:[0-9a-f]{64}$")
 AUTHORITY = "appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-image.yml@9a6aebb849bbc068105c10d9d1dfd39ebf6f78bd"
 OFFICIAL_UPSTREAM = "https://github.com/grafana/tempo.git"
 GIT_OBJECT = re.compile(r"^[0-9a-f]{40}$")
+APPROVED_REMOVED_PATHS = (
+    "opentelemetry-proto",
+    "vendor/go.yaml.in/yaml/v4/CONTRIBUTING.md",
+    "vendor/go.yaml.in/yaml/v4/README.md",
+)
+APPROVED_NORMALIZED_PATHS = (
+    "example/nomad/tempo-distributed/README.md",
+    "example/nomad/tempo-monolith/README.md",
+    "example/nomad/tempo-monolith/tempo.hcl",
+    "vendor/github.com/AzureAD/microsoft-authentication-library-for-go/LICENSE",
+    "vendor/github.com/go-logfmt/logfmt/README.md",
+    "vendor/github.com/klauspost/cpuid/v2/CONTRIBUTING.txt",
+)
 REQUIRED = (
     "README.md", "REPOSITORY_PROFILE.md", "SECURITY.md", ".github/CODEOWNERS",
     "docs/BACKUP_RESTORE_ROLLBACK.md", "docs/UPGRADE.md", ".dockerignore", ".gitleaks.toml",
@@ -59,10 +72,10 @@ def verify_official_source(upstream: dict) -> None:
     sanitization = upstream.get("sanitization", {})
     removed_paths = sanitization.get("removed_paths", [])
     normalized_paths = sanitization.get("normalized_line_endings", [])
-    if not isinstance(removed_paths, list) or not removed_paths:
-        fail("sanitization.removed_paths must be a non-empty list")
-    if not isinstance(normalized_paths, list) or not normalized_paths:
-        fail("sanitization.normalized_line_endings must be a non-empty list")
+    if tuple(removed_paths) != APPROVED_REMOVED_PATHS:
+        fail("sanitization.removed_paths differs from the independently approved policy")
+    if tuple(normalized_paths) != APPROVED_NORMALIZED_PATHS:
+        fail("sanitization.normalized_line_endings differs from the independently approved policy")
     with tempfile.NamedTemporaryFile(prefix="codestra-tempo-index-") as index:
         env = os.environ.copy()
         env["GIT_INDEX_FILE"] = index.name
