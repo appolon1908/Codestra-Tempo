@@ -3,9 +3,9 @@
   "status": "SOURCE_BOUND_BUILD_CONTRACT_PREPARED_NOT_RELEASED",
   "sourceAuthority": {
     "repository": "https://github.com/grafana/tempo.git",
-    "upstreamCommit": "049347c455383b93cd8557760f18c1f269cccc2b",
-    "officialTreeSha": "1ae8165a03e2eb515b9f96c9f0a9a139654aec9a",
-    "importedTreeSha": "e762af476c5f14874326c065b08f22786b897910",
+    "upstreamCommit": "a3184c59a6715817a7e24b568bfa35530a39fd93",
+    "officialTreeSha": "cc40a3d025918f07e666eac273922e751030492d",
+    "importedTreeSha": "75a043088e3411be2d85f07f8a2e49ad4e08891f",
     "sanitizedPaths": [
       "opentelemetry-proto",
       "example/nomad/tempo-distributed/README.md",
