@@ -1,9 +1,30 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "upstream_clone_url": "https://github.com/grafana/tempo.git",
   "upstream_ref": "main",
   "upstream_commit": "049347c455383b93cd8557760f18c1f269cccc2b",
+  "official_tree_sha": "1ae8165a03e2eb515b9f96c9f0a9a139654aec9a",
   "import_path": "upstream",
+  "imported_tree_sha": "e762af476c5f14874326c065b08f22786b897910",
+  "sanitization": {
+    "mode": "remove-explicit-upstream-documentation-fixtures",
+    "removed_paths": [
+      "opentelemetry-proto",
+      "vendor/go.yaml.in/yaml/v4/CONTRIBUTING.md",
+      "vendor/go.yaml.in/yaml/v4/README.md"
+    ],
+    "normalized_line_endings": [
+      "example/nomad/tempo-distributed/README.md",
+      "example/nomad/tempo-monolith/README.md",
+      "example/nomad/tempo-monolith/tempo.hcl",
+      "vendor/github.com/AzureAD/microsoft-authentication-library-for-go/LICENSE",
+      "vendor/github.com/go-logfmt/logfmt/README.md",
+      "vendor/github.com/klauspost/cpuid/v2/CONTRIBUTING.txt"
+    ],
+    "reason": "Official vendored documentation fixtures are excluded from the Codestra parent repository; no runtime or product source is modified."
+  },
   "synchronized_at": "2026-08-29T17:22:39.569927+00:00",
-  "deployment_enabled": false
+  "source_tree_verification_required": true,
+  "deployment_enabled": false,
+  "secret_material_allowed_in_git": false
 }
