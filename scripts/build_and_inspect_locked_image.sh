@@ -14,7 +14,6 @@ docker build \
   --file codestra/deploy/Dockerfile \
   --build-arg "GO_BUILDER_IMAGE=$builder" \
   --build-arg "TEMPO_BASE_IMAGE=$runtime" \
-  --build-arg "TEMPO_SOURCE_REVISION=$revision" \
   --tag "$tag" \
   .
 

@@ -108,6 +108,24 @@ def verify_official_source(upstream: dict) -> None:
         fail("official upstream tree with declared sanitization differs from imported_tree_sha")
 
 
+def validate_build_inputs(manifest: dict, lock: dict, dockerfile: str) -> None:
+    """Match the release publisher's image-only args and bind binary metadata."""
+    expected_args = {
+        "GO_BUILDER_IMAGE": lock["builderImage"],
+        "TEMPO_BASE_IMAGE": lock["runtimeBaseImage"],
+    }
+    if manifest.get("buildArgs") != expected_args:
+        fail("image build arguments mismatch")
+    revision = str(lock.get("sourceAuthorityCommit", ""))
+    if not GIT_OBJECT.fullmatch(revision):
+        fail("source revision must be an exact Git object ID")
+    declarations = re.findall(
+        r"(?m)^ARG TEMPO_SOURCE_REVISION(?:=([^\r\n]+))?$", dockerfile
+    )
+    if declarations != [revision, ""]:
+        fail("Dockerfile source revision default differs from locked source authority")
+
+
 def main() -> None:
     missing = [path for path in REQUIRED if not (ROOT / path).is_file()]
     if missing: fail(f"missing readiness files: {missing}")
@@ -124,8 +142,6 @@ def main() -> None:
         fail("runtime lock model/activation mismatch")
     for field in ("buildFrontendImage", "builderImage", "runtimeBaseImage"):
         if not IMAGE.fullmatch(str(lock.get(field, ""))): fail(f"mutable build input: {field}")
-    expected_args = {"GO_BUILDER_IMAGE": lock["builderImage"], "TEMPO_BASE_IMAGE": lock["runtimeBaseImage"], "TEMPO_SOURCE_REVISION": lock["sourceAuthorityCommit"]}
-    if manifest.get("buildArgs") != expected_args: fail("image build arguments mismatch")
     source_map = {"sourceAuthorityCommit": "upstream_commit", "sourceOfficialTreeSha": "official_tree_sha", "sourceImportedTreeSha": "imported_tree_sha"}
     for lock_key, upstream_key in source_map.items():
         if lock.get(lock_key) != upstream.get(upstream_key): fail(f"source tree mismatch: {lock_key}")
@@ -143,6 +159,7 @@ def main() -> None:
         fail("source image contract mismatch")
     if lock.get("runtimeBaseExecutableUsed") is not False: fail("runtime base executable may not be source authority")
     dockerfile = (ROOT / manifest["dockerfile"]).read_text(encoding="utf-8")
+    validate_build_inputs(manifest, lock, dockerfile)
     if dockerfile.splitlines()[0] != f"# syntax={lock['buildFrontendImage']}": fail("Dockerfile frontend mismatch")
     for token in ("COPY upstream /src/upstream", "-o /out/tempo", "COPY --from=tempo-builder", 'ENTRYPOINT ["/tempo"]'):
         if token not in dockerfile: fail(f"source-built executable boundary missing: {token}")

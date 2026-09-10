@@ -14,6 +14,46 @@ sys.path.insert(0, str(ROOT))
 
 
 class ReadinessTests(unittest.TestCase):
+    def test_release_build_inputs_match_publisher_and_locked_revision(self) -> None:
+        from scripts import validate_repository_readiness as readiness
+        manifest = json.loads((ROOT / "codestra/release/image-build.v1.json").read_text())
+        lock = json.loads((ROOT / "codestra/release/runtime-base.lock.json").read_text())
+        dockerfile = (ROOT / manifest["dockerfile"]).read_text()
+        readiness.validate_build_inputs(manifest, lock, dockerfile)
+        self.assertTrue(all(
+            name.endswith("_IMAGE") and readiness.IMAGE.fullmatch(value)
+            for name, value in manifest["buildArgs"].items()
+        ))
+        helper = (ROOT / "scripts/build_and_inspect_locked_image.sh").read_text()
+        self.assertNotIn('--build-arg "TEMPO_SOURCE_REVISION=', helper)
+        self.assertIn('grep -F "$revision"', helper)
+
+    def test_non_image_release_argument_is_rejected(self) -> None:
+        from scripts import validate_repository_readiness as readiness
+        manifest = json.loads((ROOT / "codestra/release/image-build.v1.json").read_text())
+        lock = json.loads((ROOT / "codestra/release/runtime-base.lock.json").read_text())
+        manifest["buildArgs"]["TEMPO_SOURCE_REVISION"] = lock["sourceAuthorityCommit"]
+        with self.assertRaisesRegex(SystemExit, "image build arguments mismatch"):
+            readiness.validate_build_inputs(
+                manifest, lock, (ROOT / manifest["dockerfile"]).read_text()
+            )
+
+    def test_missing_changed_or_overridden_source_default_is_rejected(self) -> None:
+        from scripts import validate_repository_readiness as readiness
+        manifest = json.loads((ROOT / "codestra/release/image-build.v1.json").read_text())
+        lock = json.loads((ROOT / "codestra/release/runtime-base.lock.json").read_text())
+        dockerfile = (ROOT / manifest["dockerfile"]).read_text()
+        declaration = "ARG TEMPO_SOURCE_REVISION=" + lock["sourceAuthorityCommit"]
+        variants = [
+            dockerfile.replace(declaration, "ARG TEMPO_SOURCE_REVISION", 1),
+            dockerfile.replace(declaration, "ARG TEMPO_SOURCE_REVISION=" + "0" * 40, 1),
+            dockerfile.replace("ARG TEMPO_SOURCE_REVISION\n", "ARG TEMPO_SOURCE_REVISION=" + "0" * 40 + "\n"),
+        ]
+        for candidate in variants:
+            with self.subTest(candidate=candidate[:150]):
+                with self.assertRaisesRegex(SystemExit, "source revision default"):
+                    readiness.validate_build_inputs(manifest, lock, candidate)
+
     def test_validator(self) -> None:
         subprocess.run(["python3", "scripts/validate_repository_readiness.py"], cwd=ROOT, check=True)
 
