@@ -1,0 +1,50 @@
+{
+  "schema": "kyyow.platform-component.v1",
+  "repository": "appolon1908-hue/Codestra-Tempo",
+  "component": "tempo",
+  "authority": "traces",
+  "exposure": "private",
+  "native_ports": [
+    3200,
+    9095,
+    3101,
+    4317,
+    4318
+  ],
+  "inputs": [
+    "opentelemetry:traces (OTLP gRPC directly)",
+    "object-storage:s3",
+    "memcached:11211"
+  ],
+  "outputs": [
+    "grafana:read",
+    "prometheus:metrics (metrics-generator remote write)",
+    "object-storage:s3 (trace blocks)"
+  ],
+  "controls": [
+    "span attributes must exclude payload bodies, credentials, contacts and social content at the producer and collector",
+    "tenant authority is the authenticated private transport and operator-configured business identity, not an incoming resource attribute",
+    "trace search requires a private authenticated tenant-enforcing boundary",
+    "HTTP 3200, internal HTTP 3101, gRPC 9095 and OTLP 4317/4318 stay private"
+  ],
+  "identity": {
+    "authority": "appolon1908-hue/Keycloak",
+    "workload_identity_required": true,
+    "anonymous_admin_access": false
+  },
+  "secrets": {
+    "authority": "appolon1908-hue/Codestra-OpenBao",
+    "secrets_in_git": false,
+    "environment_plaintext_secrets": false
+  },
+  "operations": {
+    "middleware_is_sole_odoo_writer": true,
+    "grafana_read_only": true,
+    "superset_read_only": true
+  },
+  "activation": {
+    "source_contract_complete": true,
+    "runtime_evidence_complete": false,
+    "production_activation_authorized": false
+  }
+}
