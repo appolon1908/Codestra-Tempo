@@ -6,20 +6,26 @@
   "exposure": "private",
   "native_ports": [
     3200,
+    9095,
+    3101,
     4317,
     4318
   ],
   "inputs": [
-    "alloy:traces"
+    "opentelemetry:traces (OTLP gRPC directly)",
+    "object-storage:s3",
+    "memcached:11211"
   ],
   "outputs": [
-    "grafana:read"
+    "grafana:read",
+    "prometheus:metrics (metrics-generator remote write)",
+    "object-storage:s3 (trace blocks)"
   ],
   "controls": [
-    "span attributes must exclude payload bodies, credentials, contacts, and social content",
-    "tenant context is propagated as a governed resource attribute",
-    "trace search is authenticated and tenant-scoped",
-    "native API is not public"
+    "span attributes must exclude payload bodies, credentials, contacts and social content at the producer and collector",
+    "tenant authority is the authenticated private transport and operator-configured business identity, not an incoming resource attribute",
+    "trace search requires a private authenticated tenant-enforcing boundary",
+    "HTTP 3200, internal HTTP 3101, gRPC 9095 and OTLP 4317/4318 stay private"
   ],
   "identity": {
     "authority": "appolon1908-hue/Keycloak",
