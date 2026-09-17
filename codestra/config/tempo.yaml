@@ -44,8 +44,16 @@ distributor:
         grpc:
           endpoint: 0.0.0.0:4317
           max_recv_msg_size_mib: 32
+          tls:
+            cert_file: /run/secrets/tempo_server_cert
+            key_file: /run/secrets/tempo_server_key
+            min_version: "1.2"
         http:
           endpoint: 0.0.0.0:4318
+          tls:
+            cert_file: /run/secrets/tempo_server_cert
+            key_file: /run/secrets/tempo_server_key
+            min_version: "1.2"
   log_received_spans:
     enabled: false
   log_discarded_spans:

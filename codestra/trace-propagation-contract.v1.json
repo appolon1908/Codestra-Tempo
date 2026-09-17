@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "component": "tempo",
+  "purpose": "Prove one TEST_SYN operation can be followed as one trace across the edge, the gateway, the control plane and the business systems, and joined to its Middleware incident.",
+  "propagation": {
+    "standard": "W3C Trace Context",
+    "headers": [
+      "traceparent",
+      "tracestate"
+    ],
+    "correlationHeader": "X-Correlation-ID",
+    "correlationAttribute": "correlation.id",
+    "correlationBound": {
+      "maxLength": 128,
+      "opaque": true,
+      "neverPersonal": true
+    },
+    "messageEnvelopes": "carry traceparent and correlation_id fields; asynchronous work uses span links"
+  },
+  "requiredSpanAttributes": [
+    "service.name",
+    "service.version",
+    "deployment.id",
+    "codestra.application",
+    "codestra.business",
+    "deployment.environment.name",
+    "correlation.id"
+  ],
+  "forbiddenSpanAttributes": [
+    "authorization",
+    "cookie",
+    "password",
+    "api_key",
+    "client_secret",
+    "access_token",
+    "private_key",
+    "database_url",
+    "x-vault-token",
+    "x-openbao-token",
+    "jwt",
+    "db.statement",
+    "exception.message",
+    "user.email",
+    "phone",
+    "tenant_id",
+    "customer_id",
+    "user_id"
+  ],
+  "hops": [
+    {
+      "order": 1,
+      "component": "caddy",
+      "repository": "appolon1908-hue/Caddy",
+      "instrumentation": "caddy tracing directive (OTLP to the local agent)",
+      "spanName": "caddy.http.request",
+      "status": "planned"
+    },
+    {
+      "order": 2,
+      "component": "kong",
+      "repository": "appolon1908-hue/Kong",
+      "instrumentation": "opentelemetry plugin with traceparent propagation",
+      "spanName": "kong",
+      "status": "planned"
+    },
+    {
+      "order": 3,
+      "component": "middleware",
+      "repository": "appolon1908-hue/Middleware-",
+      "instrumentation": "application OTel SDK; X-Correlation-ID -> correlation.id",
+      "spanName": "middleware.integration_api",
+      "status": "planned"
+    },
+    {
+      "order": 4,
+      "component": "odoo",
+      "repository": "appolon1908-hue/Odoo",
+      "instrumentation": "codestra integration controller emits child span from the propagated context",
+      "spanName": "odoo.integration",
+      "status": "planned",
+      "applicability": "where the operation reaches Odoo"
+    },
+    {
+      "order": 4,
+      "component": "n8n",
+      "repository": "appolon1908-hue/N8N",
+      "instrumentation": "workflow HTTP node propagates traceparent; result submission carries correlation_id",
+      "spanName": "n8n.workflow",
+      "status": "planned",
+      "applicability": "where the operation reaches n8n"
+    }
+  ],
+  "collectionPath": "application -> local OpenTelemetry agent (127.0.0.1:4317/4318) -> central gateway (mTLS) -> Tempo OTLP receiver (TLS, X-Scope-OrgID tenant)",
+  "proof": {
+    "campaign": "TEST_SYN",
+    "traceql": "{ span.correlation.id = \"<TEST_SYN correlation id>\" }",
+    "expectedSpans": [
+      "caddy",
+      "kong",
+      "middleware",
+      "odoo-or-n8n"
+    ],
+    "incidentJoin": "Middleware incident timeline records the same correlation_id; Grafana links the incident panel to the Tempo trace by correlation.id",
+    "runtimeEvidenceRequired": true,
+    "recordedIn": "appolon1908-hue/Middleware- docs/evidence/monitoring-openbao-integration-20260916/TEST-SYN.md"
+  },
+  "tenancy": {
+    "tenantHeader": "X-Scope-OrgID",
+    "tenantSource": "gateway resource codestra.business",
+    "callerSuppliedTenantTrusted": false
+  },
+  "receiverSecurity": {
+    "tls": true,
+    "certificateSource": "/run/secrets/tempo_server_cert rendered from OpenBao",
+    "logReceivedSpans": false
+  },
+  "runtimeApplyAuthorized": false
+}
