@@ -1,0 +1,195 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "middleware-v3-trace-contract",
+  "lane": "E",
+  "status": "PREPARED_DISABLED",
+  "activation_enabled": false,
+  "provider_effects_enabled": false,
+  "purpose": "Tempo stores Middleware V3 traces: one W3C trace from the edge through the kernel stages to the adapter and back, joined to the Middleware incident by correlation.id. Span attributes are low-cardinality and never carry credentials, statements, payloads or personal data; span metrics use bounded dimensions only.",
+  "middleware": {
+    "repository": "appolon1908-hue/Middleware-",
+    "prep_base_sha": "22d023a9c65b0789a0f7ee6c28548753521a9eff",
+    "v3_final_sha": "PENDING",
+    "repin_required_after_v3_merge": true,
+    "v3_candidate_observed": {
+      "branch": "mission/middleware-v3-command-kernel-20260919",
+      "sha": "1acb2ae",
+      "authority": "informational only; unmerged, owned by the Middleware V3 session"
+    }
+  },
+  "path": "Middleware OTel SDK -> Codestra-Telemetry agent (127.0.0.1:4317/4318) -> central gateway (mTLS) -> Tempo OTLP receivers (TLS >= 1.2, X-Scope-OrgID tenant)",
+  "propagation": {
+    "standard": "W3C Trace Context",
+    "headers": [
+      "traceparent",
+      "tracestate"
+    ],
+    "correlation_header": "X-Correlation-ID",
+    "correlation_attribute": "correlation.id",
+    "correlation_max_length": 128,
+    "rules": [
+      "traceparent and tracestate are preserved by Caddy, Kong, Middleware and the collectors; nothing rewrites trace_id/span_id",
+      "asynchronous hops (outbox -> worker -> adapter) use span links to the originating span",
+      "the Middleware incident timeline records the same correlation_id so Grafana joins incident -> trace -> logs"
+    ]
+  },
+  "v3_span_coverage": [
+    {
+      "stage": "http_ingress",
+      "span_name": "middleware.http.server",
+      "kind": "SERVER",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "jwt_auth",
+      "span_name": "middleware.auth.verify",
+      "kind": "INTERNAL",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "policy_engine",
+      "span_name": "middleware.policy.evaluate",
+      "kind": "INTERNAL",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "safety_gate",
+      "span_name": "middleware.safety.evaluate",
+      "kind": "INTERNAL",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "db_transaction",
+      "span_name": "middleware.db.transaction",
+      "kind": "CLIENT",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "outbox",
+      "span_name": "middleware.outbox.enqueue|dispatch",
+      "kind": "PRODUCER",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "worker_lease",
+      "span_name": "middleware.worker.lease",
+      "kind": "CONSUMER",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "adapter_execution",
+      "span_name": "middleware.adapter.execute",
+      "kind": "CLIENT",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "provider_readback",
+      "span_name": "middleware.adapter.readback",
+      "kind": "CLIENT",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    },
+    {
+      "stage": "reconciliation",
+      "span_name": "middleware.reconcile",
+      "kind": "INTERNAL",
+      "status": "EXPECTED_PENDING_V3",
+      "attributes_contract": "Codestra-Telemetry codestra/contracts/middleware-v3-trace-pipeline.v1.json"
+    }
+  ],
+  "required_span_attributes": [
+    "service.name",
+    "service.version",
+    "deployment.id",
+    "codestra.application",
+    "codestra.business",
+    "deployment.environment.name",
+    "correlation.id",
+    "codestra.operation.id (bounded opaque, spans and logs only)"
+  ],
+  "forbidden_span_attributes": [
+    "access_token",
+    "api_key",
+    "authorization",
+    "bao_token",
+    "client_secret",
+    "command_id_as_metric_label",
+    "command_payload",
+    "cookie",
+    "customer_id",
+    "database_url",
+    "db.statement",
+    "dsn",
+    "exception.message",
+    "http.request.header.*",
+    "http.response.header.*",
+    "id_token",
+    "jwt",
+    "openbao_token",
+    "passwd",
+    "password",
+    "phone",
+    "private_key",
+    "refresh_token",
+    "secret_value",
+    "tenant_id",
+    "user.email",
+    "user_id",
+    "vault_token",
+    "x-api-key",
+    "x-openbao-token",
+    "x-vault-token"
+  ],
+  "span_metrics_policy": {
+    "generator": "metrics_generator.processor.span_metrics + service_graphs in codestra/config/tempo.yaml",
+    "dimensions_allowed": [
+      "codestra.business",
+      "deployment.environment.name",
+      "cloud.region",
+      "deployment.id",
+      "service.namespace",
+      "http.request.method",
+      "http.response.status_code",
+      "rpc.system",
+      "messaging.system",
+      "db.system.name",
+      "peer.service"
+    ],
+    "dimensions_forbidden": [
+      "correlation.id",
+      "codestra.operation.id",
+      "command_id",
+      "operation_id",
+      "tenant_id",
+      "customer_id",
+      "user_id",
+      "http.route (unbounded without templating)",
+      "http.target",
+      "url.full",
+      "db.statement",
+      "enduser.id"
+    ],
+    "rule": "span-derived metrics are Prometheus series; every dimension must be a closed enum"
+  },
+  "tempo_bounds": {
+    "receivers_tls_min_version": "1.2",
+    "receiver_material": "/run/secrets/tempo_server_cert, /run/secrets/tempo_server_key (OpenBao references)",
+    "log_received_spans": false,
+    "log_discarded_spans": false,
+    "max_bytes_per_trace": 5000000,
+    "public_exposure": false
+  },
+  "v3_expectations": [
+    "Middleware V3 emits the ten kernel spans with the attribute sets fixed in Codestra-Telemetry's trace-pipeline contract",
+    "A TEST_SYN operation is one trace: caddy -> kong -> middleware (ingress, auth, policy, safety, db, outbox) -> worker -> adapter -> readback -> reconciliation",
+    "Re-pin middleware.v3_final_sha after V3 merges and rerun scripts/validate_middleware_v3_trace_contract.py"
+  ]
+}

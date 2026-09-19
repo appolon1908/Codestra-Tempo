@@ -56,6 +56,8 @@ jobs:
           python scripts/validate_codestra_corporate_tempo.py
           python scripts/validate_codestra_tempo_platform.py
           python -m unittest tests/test_tempo_platform.py -v
+          python scripts/validate_middleware_v3_trace_contract.py
+          python -m unittest tests/test_middleware_v3_trace_contract.py -v
 
       - name: Render hardened Compose candidate
         env:
