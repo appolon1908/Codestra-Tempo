@@ -7,7 +7,7 @@ on:
 permissions: {contents: read, packages: write, id-token: write, attestations: write}
 jobs:
   release:
-    uses: appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-image.yml@9a6aebb849bbc068105c10d9d1dfd39ebf6f78bd
+    uses: ingtrader21-spec/Codestra-Telemetry/.github/workflows/reusable-release-image.yml@9a6aebb849bbc068105c10d9d1dfd39ebf6f78bd
     with:
       image_id: tempo
       release_tag: ${{ inputs.release_tag }}

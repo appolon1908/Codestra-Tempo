@@ -1,6 +1,6 @@
 # Codestra Tempo Authority
 
-Principal repository: `appolon1908-hue/Codestra-Tempo`
+Principal repository: `ingtrader21-spec/Codestra-Tempo`
 Canonical service host: `temp.codestra.media`
 Canonical DNS target: `37.27.128.39`
 

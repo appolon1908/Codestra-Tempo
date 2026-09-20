@@ -1,6 +1,6 @@
 # Repository profile
 
-- Authority: `appolon1908-hue/Codestra-Tempo`
+- Authority: `ingtrader21-spec/Codestra-Tempo`
 - Component: `tempo`
 - Artifact model: repository-built signed image
 - Source authority: verified vendored Grafana Tempo commit

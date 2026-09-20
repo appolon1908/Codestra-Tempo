@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "repository": "appolon1908-hue/Codestra-Tempo",
+  "repository": "ingtrader21-spec/Codestra-Tempo",
   "classification": "observability-backend",
   "targetBranch": "feature/codestra-orbit-v2-codestra-tempo",
   "adoptionMode": "n/a-no-rendered-interface",
