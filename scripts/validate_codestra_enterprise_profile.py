@@ -162,9 +162,9 @@ def require_positive_int(value: Any, field: str, tenant: str) -> None:
 def validate_profile() -> dict[str, Any]:
     profile = load_json(PROFILE)
     repository = os.environ.get(
-        "GITHUB_REPOSITORY", "appolon1908-hue/Codestra-Tempo"
+        "GITHUB_REPOSITORY", "ingtrader21-spec/Codestra-Tempo"
     )
-    if repository != "appolon1908-hue/Codestra-Tempo":
+    if repository != "ingtrader21-spec/Codestra-Tempo":
         fail(f"validator is bound to Codestra-Tempo, received {repository}")
     if profile.get("schemaVersion") != "1.1":
         fail("profile schemaVersion must be 1.1")
@@ -275,8 +275,11 @@ def validate_tempo_config() -> dict[str, Any]:
         fail("Tempo trace backend must be S3-compatible storage")
     if storage.get("block", {}).get("version") != "vParquet4":
         fail("Tempo trace blocks must use vParquet4")
-    if storage.get("block", {}).get("encoding") != "zstd":
-        fail("Tempo trace blocks must use zstd")
+    # ``block.encoding`` was renamed to ``v2_encoding`` upstream and only applies to
+    # v2 blocks; the locked source parses the config strictly, so the field must be
+    # absent for vParquet4 (see validate_codestra_corporate_tempo.py).
+    if "encoding" in storage.get("block", {}):
+        fail("Tempo trace blocks must not set the removed block.encoding field")
     if storage.get("wal", {}).get("path") != "/var/lib/tempo/wal":
         fail("Tempo WAL must use the durable runtime volume")
     s3 = storage.get("s3", {})

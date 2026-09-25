@@ -14,7 +14,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 IMAGE = re.compile(r"^[a-z0-9./_-]+@sha256:[0-9a-f]{64}$")
-AUTHORITY = "appolon1908-hue/Codestra-Telemetry/.github/workflows/reusable-release-image.yml@9a6aebb849bbc068105c10d9d1dfd39ebf6f78bd"
+AUTHORITY = "ingtrader21-spec/Codestra-Telemetry/.github/workflows/reusable-release-image.yml@9a6aebb849bbc068105c10d9d1dfd39ebf6f78bd"
 OFFICIAL_UPSTREAM = "https://github.com/grafana/tempo.git"
 GIT_OBJECT = re.compile(r"^[0-9a-f]{40}$")
 APPROVED_REMOVED_PATHS = (

@@ -2,7 +2,7 @@
 
 ## Authority
 
-- Repository: `appolon1908-hue/Codestra-Tempo`
+- Repository: `ingtrader21-spec/Codestra-Tempo`
 - Role: business-isolated distributed trace authority
 - Canonical hostname: `temp.codestra.media`
 - Central production host: `37.27.128.39`
