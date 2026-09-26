@@ -1,0 +1,12 @@
+version: 1
+repository: Codestra-Tempo
+repository_url: https://github.com/ingtrader21-spec/Codestra-Tempo.git
+canonical_path: /home/codestra/Worktrees/Monitoring-Active-20260926/Codestra-Tempo
+active_worktree: /home/codestra/Worktrees/Monitoring-Active-20260926/Codestra-Tempo
+active_branch: governance/single-active-lane-20260926
+base_branch: main
+base_sha: 6d7f6e6ef32146ea88ad9f937131c95083d439c7
+upstream_ref: origin/main
+publication_branch: governance/single-active-lane-20260926
+production_effects_allowed: false
+certification_mode: isolated_exact_sha
