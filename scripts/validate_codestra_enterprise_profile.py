@@ -259,8 +259,10 @@ def validate_tempo_config() -> dict[str, Any]:
         fail("Tempo trace backend must be S3-compatible storage")
     if storage.get("block", {}).get("version") != "vParquet4":
         fail("Tempo trace blocks must use vParquet4")
-    if storage.get("block", {}).get("encoding") != "zstd":
-        fail("Tempo trace blocks must use zstd")
+    if storage.get("block", {}).get("version") != "vParquet4":
+        fail("Tempo trace blocks must use the locked vParquet4 block version")
+    if "encoding" in storage.get("block", {}):
+        fail("vParquet4 blocks do not accept a legacy encoding field")
     if storage.get("wal", {}).get("path") != "/var/lib/tempo/wal":
         fail("Tempo WAL must use the durable runtime volume")
     s3 = storage.get("s3", {})

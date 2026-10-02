@@ -124,3 +124,10 @@ Promotion is:
 CI builds the Tempo binary from the repository's locked upstream source and runs native configuration verification. It also validates tenant completeness, retention, privacy/cardinality policy, immutable packaging and Compose rendering.
 
 Merge or CI success is not deployment approval. Production remains blocked until the profile's distributed-HA requirement is met and the release packet includes immutable artifact provenance, staging evidence, object-store recovery evidence, load/capacity evidence, security approval and rollback instructions.
+
+## Monitoring platform contract (2026-09-16)
+
+- The OTLP receivers terminate TLS (1.2+) with server material rendered by the OpenBao agent (`/run/secrets/tempo_server_cert|key`), matching the central OpenTelemetry gateway exporter (`tls.insecure=false`, CA from `/run/secrets`, `X-Scope-OrgID` tenant). Received and discarded spans are never logged; request headers are never logged or traced; attributes stay bounded at 4096 bytes.
+- `codestra/trace-propagation-contract.v1.json` fixes the TEST_SYN proof: W3C `traceparent`/`tracestate` plus `X-Correlation-ID` -> `correlation.id` (bounded, opaque) across Caddy -> Kong -> Middleware -> Odoo/N8N, the required and forbidden span attributes, the TraceQL lookup and the join to the Middleware incident. Runtime evidence is recorded in the Middleware evidence package, never claimed from source.
+- Object-storage and receiver-TLS material are OpenBao secret references (identity `tempo-runtime`) against the vendored, pinned schema; nothing is committed.
+- `scripts/validate_codestra_tempo_platform.py [--telemetry-repo PATH]` fails closed on any drift, including gateway/receiver TLS disagreement.
