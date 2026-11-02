@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "policy_kind": "source_merge",
+  "repository": "appolon1908/Codestra-Tempo",
+  "authorization_date": "2026-11-02",
+  "required_checks": [
+    {
+      "context": "validate-source",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/validate-repository-readiness.yml"
+    },
+    {
+      "context": "validate-merge-result",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/validate-repository-readiness.yml"
+    },
+    {
+      "context": "guard",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/agent-governance.yml"
+    },
+    {
+      "context": "tempo-corporate-source",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/validate-codestra-enterprise-profile.yml"
+    },
+    {
+      "context": "tempo-service-contract-source",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/validate-codestra-service-contract.yml"
+    },
+    {
+      "context": "tempo-production-api-contract-source",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/validate-production-server-api-contract.yml"
+    },
+    {
+      "context": "validate-contract",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/controlled-intake-monitoring-gate.yml"
+    },
+    {
+      "context": "validate-preparation-contract",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/controlled-intake-staging-activation-gate.yml"
+    },
+    {
+      "context": "deploy-readiness / deploy-readiness / overlay-source-ci",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/codestra-deploy-readiness.yml"
+    },
+    {
+      "context": "deploy-readiness / deploy-readiness / overlay-secret-scan",
+      "integration_id": 15368,
+      "workflow": ".github/workflows/codestra-deploy-readiness.yml"
+    }
+  ],
+  "replaces_contexts": [
+    "codestra-control-plane",
+    "codestra/control-plane"
+  ],
+  "preserve": [
+    "other_required_checks",
+    "review_requirements",
+    "ref_conditions",
+    "bypass_actors",
+    "enforcement",
+    "force_push_protection",
+    "deletion_protection",
+    "deployment_authority"
+  ],
+  "production_activation_authorized": false,
+  "note": "Rulesets remain enforcement authority. Source-only lane handoff and validation do not certify upstream/runtime security, integrate or retire prior divergent lane commits, grant a custodian lease, or authorize deployment, production activation or provider effects. Every existing source and safety prerequisite remains required; signed image release and controlled runtime evidence retain their separate authority."
+}

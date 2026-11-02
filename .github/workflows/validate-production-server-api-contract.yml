@@ -2,9 +2,6 @@ name: Validate Codestra production server API contract
 
 on:
   pull_request:
-    paths:
-      - docs/CODESTRA_PRODUCTION_SERVER_API_CONTRACT.md
-      - .github/workflows/validate-production-server-api-contract.yml
   push:
     branches: [development, test, staging, production, main]
     paths:
@@ -47,3 +44,12 @@ jobs:
           assert not present, f'forbidden production contract claims: {present}'
           print('CODESTRA_TEMPO_PRODUCTION_API_CONTRACT=PASS')
           PY
+
+  tempo-production-api-contract-source:
+    if: ${{ always() }}
+    needs: [validate]
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          RESULT: ${{ needs.validate.result }}
+        run: test "$RESULT" = success

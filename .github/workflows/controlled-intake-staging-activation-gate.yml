@@ -2,9 +2,6 @@ name: Controlled intake staging activation preparation gate
 
 on:
   pull_request:
-    paths:
-      - "integration/staging-activation-contract-v1.json"
-      - ".github/workflows/controlled-intake-staging-activation-gate.yml"
   workflow_dispatch:
     inputs:
       execution_reason:
