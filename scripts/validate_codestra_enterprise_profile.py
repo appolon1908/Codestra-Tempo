@@ -162,9 +162,9 @@ def require_positive_int(value: Any, field: str, tenant: str) -> None:
 def validate_profile() -> dict[str, Any]:
     profile = load_json(PROFILE)
     repository = os.environ.get(
-        "GITHUB_REPOSITORY", "ingtrader21-spec/Codestra-Tempo"
+        "GITHUB_REPOSITORY", "appolon1908/Codestra-Tempo"
     )
-    if repository != "ingtrader21-spec/Codestra-Tempo":
+    if repository != "appolon1908/Codestra-Tempo":
         fail(f"validator is bound to Codestra-Tempo, received {repository}")
     if profile.get("schemaVersion") != "1.1":
         fail("profile schemaVersion must be 1.1")
