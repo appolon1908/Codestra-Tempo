@@ -1,7 +1,7 @@
 {
   "schema_version": "1.1",
   "suite_id": "codestra-controlled-intake-monitoring-v1",
-  "repository": "ingtrader21-spec/Codestra-Tempo",
+  "repository": "appolon1908/Codestra-Tempo",
   "component": "tempo",
   "execution_question": "Why is this integration being executed?",
   "execution_reason_required": true,

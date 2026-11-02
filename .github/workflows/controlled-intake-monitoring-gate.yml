@@ -1,7 +1,6 @@
 name: Controlled intake monitoring integration gate
 on:
   pull_request:
-    paths: ["integration/controlled-intake-monitoring-v1.json", ".github/workflows/controlled-intake-monitoring-gate.yml"]
   workflow_dispatch:
     inputs:
       execution_reason: {description: "Why is this integration being executed?", required: true, type: string}

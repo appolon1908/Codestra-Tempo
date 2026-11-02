@@ -2,14 +2,6 @@ name: Validate Codestra Tempo corporate configuration
 
 on:
   pull_request:
-    paths:
-      - 'codestra/**'
-      - 'scripts/validate_codestra_enterprise_profile.py'
-      - 'scripts/validate_codestra_corporate_tempo.py'
-      - 'scripts/validate_codestra_profile_privacy.py'
-      - '.github/workflows/validate-codestra-enterprise-profile.yml'
-      - 'upstream/go.mod'
-      - 'upstream/go.sum'
   push:
     branches: [development, test, staging, production, main]
     paths:
@@ -126,3 +118,12 @@ jobs:
           assert profile['exposure'] == 'internal_private'
           assert profile['privacy'] and all(value is False for value in profile['privacy'].values())
           PY
+
+  tempo-corporate-source:
+    if: ${{ always() }}
+    needs: [validate]
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          RESULT: ${{ needs.validate.result }}
+        run: test "$RESULT" = success
